@@ -12,6 +12,7 @@
             <div class="form">
               <i @click="focusButton" class="fa fa-search"></i>
               <input  v-model="searchQuery" type="text" class="form-control form-input" placeholder="Search anything...">
+       
             </div>
             
 

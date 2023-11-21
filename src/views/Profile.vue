@@ -26,7 +26,7 @@
             <div class="col-auto my-auto">
               <div class="h-100">
                 <h5 class="mb-1">Sayo Kravits</h5>
-                <p class="mb-0 font-weight-bold text-sm">Public Relations</p>
+                <p class="mb-0 font-weight-bold text-sm">{{ userEmail }}</p>
               </div>
             </div>
             <div
@@ -222,7 +222,7 @@
                   <label for="example-text-input" class="form-control-label"
                     >Email address</label
                   >
-                  <argon-input type="email" value="jesse@example.com" />
+                  <argon-input type="email" :value="userEmail" />
                 </div>
                 <div class="col-md-6">
                   <label for="example-text-input" class="form-control-label"
@@ -290,6 +290,7 @@
       </div>
     </div>
   </main>
+
 </template>
 
 <script>
@@ -298,15 +299,23 @@ import setTooltip from "@/assets/js/tooltip.js";
 import ProfileCard from "./components/ProfileCard.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
-
+import authService from '@/authService'
 const body = document.getElementsByTagName("body")[0];
 
 export default {
   name: "profile",
   data() {
     return {
-      showMenu: false
+      showMenu: false,
+      userEmail:""
     };
+  },
+  created() {
+    authService.onAuthStateChanged((user) => {
+      this.isAuthenticated = !!user;
+      this.userEmail = user ? user.email : "";
+      this.userName = user ? user.displayName || "" : "";
+    });
   },
   components: { ProfileCard, ArgonInput, ArgonButton },
 

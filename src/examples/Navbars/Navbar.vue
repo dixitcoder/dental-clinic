@@ -1,9 +1,7 @@
 <template>
   <nav
     class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl"
-    :class="
-      this.$store.state.isRTL ? 'top-0 position-sticky z-index-sticky' : ''
-    "
+    :class="this.$store.state.isRTL ? 'top-0 position-sticky z-index-sticky' : ''"
     v-bind="$attrs"
     id="navbarBlur"
     data-scroll="true"
@@ -27,9 +25,7 @@
             <input
               type="text"
               class="form-control"
-              :placeholder="
-                this.$store.state.isRTL ? 'أكتب هنا...' : 'Type here...'
-              "
+              :placeholder="this.$store.state.isRTL ? 'أكتب هنا...' : 'Type here...'"
             />
           </div>
         </div>
@@ -37,19 +33,53 @@
           <li class="nav-item d-flex align-items-center">
             <router-link
               :to="{ name: 'Signin' }"
-              class="px-0 nav-link font-weight-bold text-white"
+              class="px-0 nav-link font-weight-bold text-white line1"
               target="_blank"
             >
-              <i
-                class="fa fa-user"
-                :class="this.$store.state.isRTL ? 'ms-sm-2' : 'me-sm-2'"
-              ></i>
               <span v-if="this.$store.state.isRTL" class="d-sm-inline d-none"
                 >يسجل دخول</span
               >
-              <span v-else class="d-sm-inline d-none">Sign In</span>
+
+              <a
+                style="color: white"
+                @click="logout"
+                v-else
+                class="d-sm-inline d-none line"
+                >Sign Out</a
+              >
+
             </router-link>
           </li>
+          <span style="padding: 0.2pc;" @click="user"
+          ><svg
+            width="25px"
+            height="28px"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <circle
+                cx="12"
+                cy="6"
+                r="4"
+                stroke="white"
+                stroke-width="1.5"
+              ></circle>
+              <path
+                d="M19.9975 18C20 17.8358 20 17.669 20 17.5C20 15.0147 16.4183 13 12 13C7.58172 13 4 15.0147 4 17.5C4 19.9853 4 22 12 22C14.231 22 15.8398 21.8433 17 21.5634"
+                stroke="white"
+                stroke-width="2"
+                stroke-linecap="round"
+              ></path>
+            </g></svg
+        ></span>
           <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
             <a
               href="#"
@@ -101,8 +131,7 @@
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                       <h6 class="mb-1 text-sm font-weight-normal">
-                        <span class="font-weight-bold">New message</span> from
-                        Laur
+                        <span class="font-weight-bold">New message</span> from Laur
                       </h6>
                       <p class="mb-0 text-xs text-secondary">
                         <i class="fa fa-clock me-1"></i>
@@ -124,8 +153,7 @@
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                       <h6 class="mb-1 text-sm font-weight-normal">
-                        <span class="font-weight-bold">New album</span> by
-                        Travis Scott
+                        <span class="font-weight-bold">New album</span> by Travis Scott
                       </h6>
                       <p class="mb-0 text-xs text-secondary">
                         <i class="fa fa-clock me-1"></i>
@@ -138,9 +166,7 @@
               <li>
                 <a class="dropdown-item border-radius-md" href="javascript:;">
                   <div class="py-1 d-flex">
-                    <div
-                      class="my-auto avatar avatar-sm bg-gradient-secondary me-3"
-                    >
+                    <div class="my-auto avatar avatar-sm bg-gradient-secondary me-3">
                       <svg
                         width="12px"
                         height="12px"
@@ -150,12 +176,7 @@
                         xmlns:xlink="http://www.w3.org/1999/xlink"
                       >
                         <title>credit-card</title>
-                        <g
-                          stroke="none"
-                          stroke-width="1"
-                          fill="none"
-                          fill-rule="evenodd"
-                        >
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                           <g
                             transform="translate(-2169.000000, -745.000000)"
                             fill="#FFFFFF"
@@ -200,34 +221,63 @@
 <script>
 import Breadcrumbs from "../Breadcrumbs.vue";
 import { mapMutations, mapActions } from "vuex";
-
+// import { auth } from '../../views/components/firebasecofig';
+import authService from "@/authService";
 export default {
   name: "navbar",
   data() {
     return {
-      showMenu: false
+      showMenu: false,
+      isAuthenticated: false,
+      userEmail: "",
     };
   },
   props: ["minNav", "textWhite"],
   created() {
     this.minNav;
+    authService.onAuthStateChanged((user) => {
+      this.isAuthenticated = !!user;
+      this.userEmail = user ? user.email : "";
+      this.userName = user ? user.displayName || "" : "";
+    });
   },
   methods: {
+    user(){
+      this.$router.push("/profile")
+    },
     ...mapMutations(["navbarMinimize", "toggleConfigurator"]),
     ...mapActions(["toggleSidebarColor"]),
 
     toggleSidebar() {
       this.toggleSidebarColor("bg-white");
       this.navbarMinimize();
-    }
+    },
+
+    async logout() {
+      try {
+        await authService.logout();
+      } catch (error) {
+        console.error("Logout error:", error.message);
+      }
+    },
   },
+
   components: {
-    Breadcrumbs
+    Breadcrumbs,
   },
   computed: {
     currentRouteName() {
       return this.$route.name;
-    }
-  }
+    },
+  },
 };
 </script>
+<style scoped>
+.line {
+  padding: 0.4pc;
+  border-radius: 20px;
+}
+.line1 {
+  padding: 2px;
+}
+</style>

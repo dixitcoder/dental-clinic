@@ -12,91 +12,134 @@ import RegistrationForm from '../views/components/RegistrationForm.vue'
 import formEdit from '@/views/components/formEdit'
 import Array from "../views/components/ArryForm.vue";
 import reportEdit from '@/views/components/reportEdit'
-
-const routes = [
-  {
-    path: "/",
-    name: "/",
-    redirect: "/dashboard-default",
-  },
-  {
-    path:'/reportEdit/:edit/:index',
-    name:'ReportEdit',
-    component: reportEdit
-  },
-  {
-    path:'/:array',
-    name:'store',
-    component:Array
-  },
-  {
-    path:'/form',
-    name:'register-form',
-    component:RegistrationForm
-  },
-  {
-    path: "/dashboard-default",
-    name: "Dashboard",
-    component: Dashboard,
-  },
-  {
-    path: "/tables",
-    name: "Tables",
-    component: Tables,
-
-  },  
-  {
-    path: "/tables",
-    name: "Tables",
-    component: Tables,
-  },
-  {
-    path: "/Apportionment",
-    name: "Appotioment",
-    component: Apportionment,
-  },
-  {
-    path: "/billing",
-    name: "Billing",
-    component: Billing,
-  },
-  {
-    path: "/virtual-reality",
-    name: "Virtual Reality",
-    component: VirtualReality,
-  },
-  {
-    path: "/rtl-page",
-    name: "RTL",
-    component: RTL,
-  },
-  {
-    path: "/profile",
-    name: "Profile",
-    component: Profile,
-  },
-  {
-    path: "/signin",
-    name: "Signin",
-    component: Signin,
-  },
-  {
-    path: "/signup",
-    name: "Signup",
-    component: Signup,
-  },
-  {
-    path:"/formEdit/:id",
-    name:'pasentUpdate',
-    component:formEdit
-  }
-  
-];
+import Home from "../pages/Home.vue"
+// import {auth , onAuthStateChanged} from "firebase/auth"
+import authService from "../authService";
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes,
-  linkActiveClass: "active",
+  history: createWebHistory(),
+  routes: [
+    {
+      path: "/",  
+      name: "/",
+      redirect: "/Home",
+      beforeEnter: authenticateRoute,
+    },
+    {
+      path:'/reportEdit/:edit/:index',
+      name:'ReportEdit',
+      component: reportEdit,
+      beforeEnter: authenticateRoute,
+
+    },
+      {
+      path:'/home',
+      name:'Home',
+      component: Home
+    },
+    {
+      path:'/:array',
+      name:'store',
+      component:Array,
+      beforeEnter: authenticateRoute,
+
+    },
+    {
+      path:'/form',
+      name:'register-form',
+      component:RegistrationForm,
+      beforeEnter: authenticateRoute,
+    },
+    {
+      path: "/dashboard-default",
+      name: "Dashboard",
+      component: Dashboard,
+      beforeEnter: authenticateRoute,
+    },
+    {
+      path: "/tables",
+      name: "Tables",
+      component: Tables,
+      beforeEnter: authenticateRoute,
+
+  
+    },  
+    {
+      path: "/tables",
+      name: "Tables",
+      component: Tables,
+      beforeEnter: authenticateRoute,
+
+    },
+    {
+      path: "/Apportionment",
+      name: "Appotioment",
+      component: Apportionment,
+      beforeEnter: authenticateRoute,
+
+    },
+    {
+      path: "/billing",
+      name: "Billing",
+      component: Billing,
+      beforeEnter: authenticateRoute,
+
+    },
+    {
+      path: "/virtual-reality",
+      name: "Virtual Reality",
+      component: VirtualReality,
+      beforeEnter: authenticateRoute,
+
+    },
+    {
+      path: "/rtl-page",
+      name: "RTL",
+      component: RTL,
+      beforeEnter: authenticateRoute,
+      
+    },
+    {
+      path: "/profile",
+      name: "Profile",
+      component: Profile,
+      beforeEnter: authenticateRoute,
+
+    },
+    {
+      path: "/signin",
+      name: "Signin",
+      component: Signin,
+      
+    },
+    {
+      path: "/signup",
+      name: "Signup",
+      component: Signup,
+      beforeEnter: authenticateRoute,
+
+    },
+    {
+      path:"/formEdit/:id",
+      name:'pasentUpdate',
+      component:formEdit,
+      beforeEnter: authenticateRoute,
+
+    }
+    
+  ],
 });
 
-export default router;
+function authenticateRoute(to, from, next) {
+  authService.onAuthStateChanged((user) => {
+    if (user) {
+      // User is authenticated, allow access to the route
+      next();
+    } else {
+      // User is not authenticated, redirect to login or another page
+      next("/signin"); // Adjust the path as needed
+    }
+  });
+}
+
+ export default router
